@@ -5,7 +5,7 @@ extern int lookahead;
 
 void match(int);
 
-int smpexpr(int);
+int smpExpr(int);
 
 int expr(int);
 
@@ -23,6 +23,6 @@ int isotilde(int otilde);
 
 int isnegate(void);
 
-int operclass(int );
+int operClass(int );
 
-int typeclass (int );
+int typeClass (int );

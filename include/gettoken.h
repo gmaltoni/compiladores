@@ -18,4 +18,4 @@ enum {
     ST
 };
 
-int  gettoken(FILE *);
+int  getToken(FILE *);

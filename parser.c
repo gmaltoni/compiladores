@@ -11,328 +11,328 @@
 #include <macros.h>
 #include <symtab.h>
 
-/** Imperative syntax **/
+/** Sintaxe imperativa. **/
+
 /**/int loopcount = 0;
-void ifstmt() {
-	match(IF);				// (lbl_else=lbl_endif=loopcount++)
-	/**/int lbl_else, lbl_endif/**/;
-	/**/lbl_else=loopcount++/**/;
-	/**/lbl_endif=loopcount++/**/;
-	expr(BOOL);				//		<<expr>>.as
-	match(THEN);				//		jz  .L$lbl_endif
-	/**/printf("\tjz  .L%d\n", lbl_else)/**/;	
-	stmt();					//		<<stmt>>.as
-	if (lookahead==ELSE) 	
-	{		
-						//		jmp .L$lbl_endif
-		/**/printf("\tjmp  .L%d\n", lbl_endif)/**/;
-		match(ELSE);			// .L$lbl_else:
-		/**/printf(".L%d:\n", lbl_else)/**/;	
-		stmt();				//		<<stmt>>.as	
-	}					//
-						// .L$lbl_endif:
-	/**/printf(".L%d:\n", lbl_endif)/**/;
+
+void ifStmt() {
+    match(IF);				// (lbl_else = lbl_endif=loopcount++)
+    /**/int lbl_else, lbl_endif/**/;    //
+    /**/lbl_else = loopcount++/**/;     //
+    /**/lbl_endif = loopcount++/**/;    //
+    expr(BOOL);				//		<<expr>>.as
+    match(THEN);			//		jz  .L$lbl_endif
+    /**/printf("\tjz  .L%d\n", lbl_else)/**/;	
+    stmt();				//		<<stmt>>.as
+    if (lookahead == ELSE) {            //
+                                        //		jmp .L$lbl_endif
+        /**/printf("\tjmp  .L%d\n", lbl_endif)/**/;
+        match(ELSE);                    // .L$lbl_else:
+        /**/printf(".L%d:\n", lbl_else)/**/;	
+        stmt();                         //		<<stmt>>.as	
+    }					//
+                                        // .L$lbl_endif:
+    /**/printf(".L%d:\n", lbl_endif)/**/;
 }
 
-void whlstmt() {
-						// (lbl_while=lbl_endwhile=loopcount++)
-	match(WHILE);				// .L$lbl_while:
-	/**/int lbl_while, lbl_endwhile/**/;
-	/**/lbl_while=loopcount++/**/;
-	/**/lbl_endwhile=loopcount++/**/;
-	/**/printf(".L%d:\n", lbl_while)/**/;
-	expr(BOOL);				//		<<expr>>.as
-	match(DO);				//		jz  .L$lbl_endwhile
-	/**/printf("\tjz  .L%d\n", lbl_endwhile)/**/;
-	stmt();					//		<<stmt>>.as
+void whlStmt() {
+						// (lbl_while = lbl_endwhile = loopcount++)
+    match(WHILE);				// .L$lbl_while:
+    /**/int lbl_while, lbl_endwhile/**/;
+    /**/lbl_while = loopcount++/**/;
+    /**/lbl_endwhile = loopcount++/**/;
+    /**/printf(".L%d:\n", lbl_while)/**/;
+    expr(BOOL);                                 //		<<expr>>.as
+    match(DO);                                  //		jz  .L$lbl_endwhile
+    /**/printf("\tjz  .L%d\n", lbl_endwhile)/**/;
+    stmt();					//		<<stmt>>.as
 						//		jmp .L$lbl_while
-	/**/printf("\tjmp  .L%d\n", lbl_while)/**/;
+    /**/printf("\tjmp  .L%d\n", lbl_while)/**/;
 						// .L$lbl_endwhile:
-	/**/printf(".L%d:\n", lbl_endwhile)/**/;
+    /**/printf(".L%d:\n", lbl_endwhile)/**/;
 }
 
-void repstmt() {
+void repStmt() {
 						// (lbl_repeat=lbl_endrepeat=loopcount++)
-	match(REPEAT);				// .L$lbl_repeat:
-	/**/int lbl_repeat, lbl_endrepeat/**/;
-	/**/lbl_repeat=loopcount++/**/;
-	/**/printf(".L%d:\n", lbl_repeat)/**/;
-	stmtlist();				//		<<stmtlist>>.as
-	match(UNTIL);				
+    match(REPEAT);				// .L$lbl_repeat:
+    /**/int lbl_repeat, lbl_endrepeat/**/;
+    /**/lbl_repeat=loopcount++/**/;
+    /**/printf(".L%d:\n", lbl_repeat)/**/;
+    stmtlist(); 				//		<<stmtlist>>.as
+    match(UNTIL);				
 						//		jnz .L$lbl_repeat
-	expr(BOOL);				//		<<expr>>.as
-	/**/printf("\tjnz  .L%d\n", lbl_repeat)/**/;
+    expr(BOOL); 				//		<<expr>>.as
+    /**/printf("\tjnz  .L%d\n", lbl_repeat)/**/;
 }
 
-void bgnstmt() {
-	match(BEGIN);
-	stmtlist();
-	match(END);
+void bgnStmt() {
+    match(BEGIN);
+    stmtlist();
+    match(END);
 }
 
-/** Syntax definition **/
+/** Definição da sintaxe **/
 
 /*
- * Proto-Pascal syntax -- LL(1) EBNF
+ * Sintaxe do Proto-Pascal -- LL(1) EBNF
  */
 
 /* expr --> E [ relop E ] */
-/* typecheck implemented*/
-int expr(int inherited_type) {
+int expr(int inheritedType) {
 
-	/**/int otilde, oprnd1, oprnd2/**/;
+    /**/int otilde, oprnd1, oprnd2/**/;
 
-    	/**/oprnd1 = /**/smpexpr(0);
+    /**/oprnd1 = /**/smpExpr(0);
 
-    	if (isotilde(/**/otilde =/**/ lookahead)) {
-        	match(otilde);
+    if (isotilde(/**/otilde =/**/ lookahead)) {
+        match(otilde);
 
-		/**/oprnd2 =/**/ smpexpr(/**/oprnd1/**/);
+        /**/oprnd2 =/**/ smpExpr(/**/oprnd1/**/);
 
-		/** typecheck begin **/
-		if(typeclass(oprnd1) != typeclass(oprnd2)) {
-			
-			fprintf(stderr, "fatal error: incompatible operation %d with %d.\n",oprnd1,oprnd2);
-			return -1;
-		} else {
-			oprnd1 = BOOL;
-		}
-    	}
+        /** Início da checagem de tipos **/
+        if(typeClass(oprnd1) != typeClass(oprnd2)) {
+            fprintf(stderr, "fatal error: incompatible operation %d with %d.\n", oprnd1, oprnd2);
+            return -1;
+        } else {
+            oprnd1 = BOOL;
+        }
+    }
 
-    	if(inherited_type == BOOL && oprnd1 != BOOL){
-    		fprintf(stderr, "incompatible operation %d with %d: fatal error.\n",inherited_type,oprnd1);
-       		return -1;
-  	}
-  	return oprnd1;
+    if (inheritedType == BOOL && oprnd1 != BOOL) {
+        fprintf(stderr, "incompatible operation %d with %d: fatal error.\n", inheritedType, oprnd1);
+        return -1;
+    }
     
+    return oprnd1;
 }
 
-int iscompatible(int ltype, int rtype)
-{
-	switch(ltype) {
+/*
+ * Verifica a compatibilidade de tipos.
+ */
+int isCompatible(int leftType, int rightType) {
+    switch(leftType) {
+        case BOOLEAN:
+        case BYTE:
+        case CHAR:
+            if(rightType == leftType)
+            return leftType;
+            break;
+        case WORD:
+            switch(rightType) {
+                case BYTE:
+                case WORD:
+                    return leftType;
+            }
+            break;
+        case INTEGER:
+            switch(rightType) {
+                case INTEGER:
+                case WORD:
+                case BYTE:
+                    return leftType;
+            }
+            break;
+        case LONGINT:
+            switch(rightType) {
+                case LONGINT:
+                case INTEGER:
+                case WORD:
+                case BYTE:
+                    return leftType;
+            }
+            break;
+        case REAL:
+            switch(rightType) {
+                case LONGINT:
+                case INTEGER:
+                case WORD:
+                case BYTE:
+                case REAL:
+                    return leftType;
+            }
+            break;
+        case DOUBLE:
+            switch(rightType) {
+                case LONGINT:
+                case INTEGER:
+                case WORD:
+                case BYTE:
+                case REAL:
+                case DOUBLE:
+                    return leftType;
+            }
+            break;
+        case STRING:
+            switch(rightType) {
+                case STRING:
+                case CHAR:
+                    return leftType;
+            }
+            break;
+        default:
+            return 0;
+            break;
+    }
 
-     		case BOOLEAN:
-		case BYTE:
-		case CHAR:
-			if(rtype == ltype)
-         		return ltype;
-       			break;
-		case WORD:
-			switch(rtype) {
-				case BYTE:
-				case WORD:
-					return ltype;
-			}
-			break;
-     		case INTEGER:
-			switch(rtype) {
-	       			case INTEGER:
-				case WORD:
-				case BYTE:
-					return ltype;
-			}
-			break;
-		case LONGINT:
-			switch(rtype) {
-				case LONGINT:
-	       			case INTEGER:
-				case WORD:
-				case BYTE:
-					return ltype;
-			}
-			break;
-     		case REAL:
-       			switch(rtype) {
-				case LONGINT:
-         			case INTEGER:
-				case WORD:
-				case BYTE:
-         			case REAL:
-         				return ltype;
-       			}
-       			break;
-
-     		case DOUBLE:
-       			switch(rtype) {
-				case LONGINT:
-         			case INTEGER:
-				case WORD:
-				case BYTE:
-         			case REAL:
-         			case DOUBLE:
-           				return ltype;
-       			}
-			break;
-		case STRING:
-			switch(rtype) {
-				case STRING:
-				case CHAR:
-					return ltype;
-			}
-			break;
-		default:
-			return 0;
-			break;
-   	}
-	return 0;
+    return 0;
 }
 
 enum {
-	NUMERIC = 1,
-	INTONLY,
-	LOGICAL,
-	LITERAL
+    NUMERIC = 1,
+    INTONLY,
+    LOGICAL,
+    LITERAL
 };
 
-int typeclass (int type) {
-	if (type>= BYTE && type<= DOUBLE) 
-		return NUMERIC;
-	else if (type == BOOL)
-		return LOGICAL;
-	return LITERAL;
+/*
+ * Define a classificação da tipagem.
+ */
+int typeClass(int type) {
+    if (type >= BYTE && type <= DOUBLE) 
+        return NUMERIC;
+    else if (type == BOOL)
+        return LOGICAL;
+    return LITERAL;
 }
 
-
-int smpexpr(int inherited_type)
-{
-  /**/int sign, otimes = 0, oplus = 0, acctype = 0, R_type, L_type, val_seen = 0/**/;
+int smpExpr(int inheritedType) {
+  /**/int sign, otimes = 0, oplus = 0, acctype = 0, R_type, L_type, valSeen = 0/**/;
   /**/char name[MAXSTRLEN+1]/**/;
 
-  E_start:
-	/**/sign = /**/isnegate();
-	if(sign) match(sign);
-  T_start:
-  F_start:
+E_start:
+    /**/sign = /**/isnegate();
+    if(sign) match(sign);
+T_start:
+F_start:
     /*1* if(oplus + otimes){
 	    	acc_push();
-	}/*1*/
+	 } /*1*/
     switch (lookahead) {
-    case ID:
-	/*2*/strcpy(name, lexeme)/*2*/;
+        case ID:
+            /*2*/strcpy(name, lexeme)/*2*/;
 
-	/**/int symtab_descriptor = symtab_lookup(name)/**/;
-	/**/if (symtab_descriptor) {
-		L_type = symtab[symtab_descriptor].vtype;
-	}else {
-		fprintf(stderr, "left-assignment variable \"%s\" not declared\n", lexeme);
-		L_type = -1;
-	}/**/
+            /**/int symtab_descriptor = symtab_lookup(name)/**/;
+            /**/if (symtab_descriptor) {
+                L_type = symtab[symtab_descriptor].vtype;
+            } else {
+                fprintf(stderr, "left-assignment variable \"%s\" not declared\n", lexeme);
+                L_type = -1;
+            }/**/
 
-	if (acctype == 0){
-	  acctype = L_type;
-	}
- 
-	match(ID);
-        if (lookahead == ASGNM) {
+            if (acctype == 0){
+                acctype = L_type;
+            }
 
+            match(ID);
+            if (lookahead == ASGNM) {
 
-            /** ASGNM = ":=" **/
-            match(ASGNM);
-            R_type = smpexpr(/**/inherited_type/**/);
+                /** ASGNM = ":=" **/
+                match(ASGNM);
+                R_type = smpExpr(/**/inheritedType/**/);
 
-	    /**type compatibility check regarding L-typ and R-type **/
-	    if (iscompatible(L_type, R_type)) {
-		acctype = max(R_type = L_type, acctype);
-	    } else {
-		fprintf(stderr, "error: R-type mismatch L-type\n");
-		acctype = TYPE_MISMATCH;
-	    }
-	    val_seen = 1;
+                /**type compatibility check regarding L-typ and R-type **/
+                if (isCompatible(L_type, R_type)) {
+                    acctype = max(R_type = L_type, acctype);
+                } else {
+                    fprintf(stderr, "error: R-type mismatch L-type\n");
+                    acctype = TYPE_MISMATCH;
+                }
 
-        } else {
-	    	/**/
-		// vd is the variable descriptor in the symbol table
-		int vd = symtab_lookup(name);
-	    	if (vd > 0) {
-			R_type = symtab[vd].vtype;
-		} else {
-			fprintf(stderr, "error: undeclared variable\"%s\"\n", name);
-		}
-		/**/
-		/**/
-		switch(R_type) {
-			case BYTE:
-				printf("\tpushb %%al\n\tmovb %s,%%al\n",symtab[vd].name);
-				break;
-			case WORD:
-				printf("\tpushw %%ax\n\tmovw %s,%%ax\n",symtab[vd].name);
-				break;
-			case INTEGER:
-				printf("\tpushl %%eax\n\tmovl %s,%%eax\n",symtab[vd].name);
-				break;
-			case LONGINT:
-				printf("\tpushq %%rax\n\tmovq %s,%%rax\n",symtab[vd].name);
-				break;
-			case REAL:
-				printf("\tpushss %%xmn0\n\tmovss %s,%%xmn0\n",symtab[vd].name);
-				break;
-			case DOUBLE:
-				printf("\tpushsd %%xmn0\n\tmovsd %s,%%xmn0\n",symtab[vd].name);
-				break;
-		}/**/
-	}
-        break;
+                valSeen = 1;
 
-    case FLT:
+            } else {
+                    /**/
+                    // vd is the variable descriptor in the symbol table
+                    int vd = symtab_lookup(name);
+                    if (vd > 0) {
+                        R_type = symtab[vd].vtype;
+                    } else {
+                        fprintf(stderr, "error: undeclared variable\"%s\"\n", name);
+                    }
+                    /**/
+                    switch(R_type) {
+                        case BYTE:
+                            printf("\tpushb %%al\n\tmovb %s,%%al\n",symtab[vd].name);
+                            break;
+                        case WORD:
+                            printf("\tpushw %%ax\n\tmovw %s,%%ax\n",symtab[vd].name);
+                            break;
+                        case INTEGER:
+                            printf("\tpushl %%eax\n\tmovl %s,%%eax\n",symtab[vd].name);
+                            break;
+                        case LONGINT:
+                            printf("\tpushq %%rax\n\tmovq %s,%%rax\n",symtab[vd].name);
+                            break;
+                        case REAL:
+                            printf("\tpushss %%xmn0\n\tmovss %s,%%xmn0\n",symtab[vd].name);
+                            break;
+                        case DOUBLE:
+                            printf("\tpushsd %%xmn0\n\tmovsd %s,%%xmn0\n",symtab[vd].name);
+                            break;
+                    }/**/
+            }
+            break;
 
-	/**/ R_type = flt2arch(lexeme, sign)/**/;
-	/**/rmove(lexeme, R_type)/**/;
-	match(FLT);
-	break;
-    case DEC:
+        case FLT:
 
-	/**/ R_type = uint2arch(lexeme, sign)/**/;
-	/**/rmove(lexeme, R_type)/**/;
-	match(DEC);
-        break;
-    case CH:
-	/**/ R_type = CHAR/**/;
-	match(CH);
-	break;
-    case ST:
-	/**/ R_type = STRING/**/;
-	match(ST);
-	break;
-    case TRUE:
-	R_type = BOOLEAN;
-	match(TRUE);
-	break;
-    case FALSE:
-	R_type = BOOLEAN;
-	match(FALSE);
-	break;
-    default:
-        match('('); /**/R_type = /**/smpexpr(0); match(')');
+            /**/ R_type = flt2arch(lexeme, sign)/**/;
+            /**/rmove(lexeme, R_type)/**/;
+            match(FLT);
+            break;
+        case DEC:
+
+            /**/ R_type = uint2arch(lexeme, sign)/**/;
+            /**/rmove(lexeme, R_type)/**/;
+            match(DEC);
+            break;
+        case CH:
+            /**/ R_type = CHAR/**/;
+            match(CH);
+            break;
+        case ST:
+            /**/ R_type = STRING/**/;
+            match(ST);
+            break;
+        case TRUE:
+            R_type = BOOLEAN;
+            match(TRUE);
+            break;
+        case FALSE:
+            R_type = BOOLEAN;
+            match(FALSE);
+            break;
+        default:
+            match('('); /**/R_type = /**/smpExpr(0); match(')');
     }
 
-   /**/
-   if (acctype == 0) { 
-	acctype = R_type;
-   } else {
-	if (typeclass(acctype) == typeclass(R_type)) {
+    /**/
+    if (acctype == 0) { 
+        acctype = R_type;
+    } else {
+	if (typeClass(acctype) == typeClass(R_type)) {
 		acctype = max(acctype, R_type);
 	} else {
-		fprintf(stderr, "error: type mismatch\n");
-		acctype = TYPE_MISMATCH;
+            fprintf(stderr, "error: type mismatch\n");
+            acctype = TYPE_MISMATCH;
 	}
    }/**/
 
     /*12*if (otimes){calculate(otimes);otimes=0;}/*12*/
 
-  F_end:
+F_end:
     if (/**/otimes = /**/isotimes(lookahead, acctype)) {
 	/**/
 	//TODO: verificar mod e div com inteiros
-	if (typeclass(acctype) != operclass(otimes)) {
-		fprintf(stderr, "error: operato type does not match operand type\n");
-		acctype = OPERAND_MISMATCH;
+	if (typeClass(acctype) != operClass(otimes)) {
+            fprintf(stderr, "error: operato type does not match operand type\n");
+            acctype = OPERAND_MISMATCH;
 	}
 	/**/
         match(lookahead);
         goto F_start;
     }
 
-  T_end:
+T_end:
     /*11*/if (sign) {
 	chs(acctype);
 	sign = 0;
@@ -342,52 +342,57 @@ int smpexpr(int inherited_type)
 
     if (/**/oplus = /**/isoplus(lookahead, acctype)) {
 	/**/
-	if (typeclass(acctype) != operclass(oplus)) {
-		fprintf(stderr, "error: operato type does not match operand type\n");
-		acctype = OPERAND_MISMATCH;
+	if (typeClass(acctype) != operClass(oplus)) {
+            fprintf(stderr, "error: operato type does not match operand type\n");
+            acctype = OPERAND_MISMATCH;
 	}
 	/**/
         match(lookahead);
         goto T_start;
     }
-    if (val_seen == 1) {
+
+    if (valSeen == 1) {
 	lmove(name,acctype);
     }
 
-  E_end:
+E_end:
     ;
     return acctype;
 }
 
-int operclass(int oper) {
-	switch(oper) {
-		case '+':
-		case '-':
-		case '*':
-		case '/':
-			return NUMERIC;
-		case DIV:
-		case MOD:
-			return INTONLY;
-		case AND:
-		case OR:
-		case NOT:
-			BOOL;
-	}
-	return 0;
+/*
+ * Define a classificação da operação.
+ */
+int operClass(int oper) {
+    switch(oper) {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            return NUMERIC;
+        case DIV:
+        case MOD:
+            return INTONLY;
+        case AND:
+        case OR:
+        case NOT:
+            BOOL;
+    }
+
+    return 0;
 }
 
 int isoplus(int oplus, int type)
 {
     switch (oplus) {
     case '+':
-	/**/asm_add(type)/**/;
+	/**/asmAdd(type)/**/;
 	return '+';
     case '-':
-	/**/asm_sub(type)/**/;
+	/**/asmSub(type)/**/;
         return '-';
     case OR:
-	/**/asm_mullog()/**/;
+	/**/asmMulLog()/**/;
 	return OR;
     }
 
@@ -398,15 +403,15 @@ int isotimes(int otimes, int type)
 {
     switch (otimes) {
     case '*':
-	/**/asm_mul(type)/**/;
+	/**/asmMul(type)/**/;
 	return '*';
     case '/':
-	/**/asm_div(type)/**/;
+	/**/asmDiv(type)/**/;
         return '/';
     case DIV:
 	return DIV;
     case AND:
-	/**/asm_addlog()/**/;
+	/**/asmAddLog()/**/;
 	return AND;
     case MOD:
 	return MOD;
@@ -443,7 +448,7 @@ int varlist(void) {
 	return a;
 }
 
-int vartype(void) {
+int varightType(void) {
 	int type = lookahead;
     switch(lookahead) {
         case BYTE:
@@ -464,9 +469,9 @@ int vartype(void) {
 
 void declarative(void) {
     /**/int range_start, range_type/**/;
-    /* vardec1 --> VAR varlist : vartype ; */
+    /* vardec1 --> VAR varlist : varightType ; */
     /* varlist --> ID { , ID } 
-     * vartype --> BYTE | WORD | INTEGER | LONGINT | REAL | DOUBLE
+     * varightType --> BYTE | WORD | INTEGER | LONGINT | REAL | DOUBLE
      *           | BOOLEAN | CHAR | STRING
      */
 
@@ -475,7 +480,7 @@ void declarative(void) {
 WHLID:
 	range_start = varlist();
 	match(':');
-	range_type = vartype();
+	range_type = varightType();
         match(';');
 	/**/symtab_settype(range_type,range_start)/**/;
 	if(lookahead==ID) goto WHLID;
@@ -487,13 +492,13 @@ WHLID:
 void stmt(void)
 {
     	switch(lookahead){
-		case BEGIN:  bgnstmt();
+		case BEGIN:  bgnStmt();
 			     break;
-		case IF:     ifstmt();
+		case IF:     ifStmt();
 			     break;
-		case WHILE:  whlstmt();
+		case WHILE:  whlStmt();
 			     break;
-		case REPEAT: repstmt();
+		case REPEAT: repStmt();
 			     break;
 
 		 case ID: //tokens.h
@@ -504,7 +509,7 @@ void stmt(void)
 		 case NOT: //keywords.h
 		 case '-':
 		 case '(':
-		      	smpexpr(0);
+		      	smpExpr(0);
 		      	break;
 		default:     ;
 	}
@@ -537,7 +542,7 @@ int lookahead;
 
 void match(int expected) {
     if (expected == lookahead) {
-        lookahead = gettoken(src);
+        lookahead = getToken(src);
     } else {
         fprintf(stderr, "token mismatch\n");
         fprintf(stderr, "expected '%c' ", expected);

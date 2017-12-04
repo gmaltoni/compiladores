@@ -1,8 +1,9 @@
+/**@<keywords.c>::**/
+
 #include <keywords.h>
 #include <string.h>
 
-char *keyword[] =
-{
+char *keyword[] = {
     "begin",
     "var",
     "byte",
@@ -31,8 +32,12 @@ char *keyword[] =
     "end"
 };
 
-int iskeyword(char const *identifier) {
+/*
+ * Verifica se o identificador é uma palavra reservada.
+ */
+int isKeyword(char const *identifier) {
     int i;
+    
     for (i = BEGIN; i <= END; i++) {
         if (strcmp(keyword[i - BEGIN], identifier) == 0)
 	    return i;

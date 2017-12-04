@@ -29,4 +29,4 @@ enum {
     END
 };
 
-int iskeyword(char const *identifier);
+int isKeyword(char const *identifier);
