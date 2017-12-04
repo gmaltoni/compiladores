@@ -324,7 +324,7 @@ F_end:
 	/**/
 	//TODO: verificar mod e div com inteiros
 	if (typeClass(acctype) != operClass(otimes)) {
-            fprintf(stderr, "error: operato type does not match operand type\n");
+            fprintf(stderr, "error: operator type does not match operand type\n");
             acctype = OPERAND_MISMATCH;
 	}
 	/**/
@@ -343,7 +343,7 @@ T_end:
     if (/**/oplus = /**/isOPlus(lookahead, acctype)) {
 	/**/
 	if (typeClass(acctype) != operClass(oplus)) {
-            fprintf(stderr, "error: operato type does not match operand type\n");
+            fprintf(stderr, "error: operator type does not match operand type\n");
             acctype = OPERAND_MISMATCH;
 	}
 	/**/

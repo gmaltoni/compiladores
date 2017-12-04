@@ -14,8 +14,8 @@ int main(int argc, char const *argv[]) {
         src = fopen(argv[1], "r");
         if (src == NULL) {
             fprintf(stderr, 
-                    "%s: cannot open %s... exiting",
-                    argv[0], argv[1], " with error status %d\n", -1);
+                    "%s: cannot open %s... exiting with error status %d\n",
+                    argv[0], argv[1], -1);
             return -1;
         }
     }

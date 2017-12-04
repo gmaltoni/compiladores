@@ -2,6 +2,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <keywords.h>
 #include <gettoken.h>
@@ -76,10 +77,9 @@ int isString(FILE * tape) {
             head = getc(tape);
             
             if (head != '\'') {
-                // TODO: melhorar comentarios
-                fprintf(stderr, "fatal error bla bla bla");
-                return 0;
-                //exit(-4);
+                fprintf(stderr, "fatal error: invalid character");
+                //return 0;
+                exit(-3);
             }
             
             return CH;
