@@ -17,6 +17,8 @@ char           *tokeninfo[] = {
     "SCI",
     "FLT",
     "ASGNM",
+    "CH",
+    "ST"
 };
 
 void skipspaces(FILE * tape)
@@ -24,6 +26,33 @@ void skipspaces(FILE * tape)
     int             head;
     while (isspace(head = getc(tape)));
     ungetc(head, tape);
+}
+
+int isSTRING(FILE * tape) {
+	int head;
+	int i = 0;
+	head = getc(tape);
+	if (head == '\"') {
+		while(head = getc(tape) != '\"') {
+			lexeme[i] = head;
+			i++;
+		}
+		return ST; 
+	} else if (head == '\'') {
+		if ((lexeme[i] = getc(tape)) != '\'') {
+			head = getc(tape);
+			if (head != '\'') {
+				// TODO: melhorar comentarios
+				fprintf(stderr, "fatal error bla bla bla");
+				return 0;
+				//exit(-4);
+			}
+			return CH;
+		}
+		return CH;
+	}	
+	ungetc(head, tape);	
+	return 0;
 }
 
 //TODO: skipcomments
@@ -291,7 +320,8 @@ int gettoken(FILE * tape)
     char teste;
     int             token;
     skipspaces(tape);
-    if ((token = isID(tape)) ||
+    if ((token = isSTRING(tape)) ||
+	(token = isID(tape)) ||
         (token = isnumber(tape)) ||
         (token = iscomposite(tape)) ||
         (token = isassignment(tape))) {

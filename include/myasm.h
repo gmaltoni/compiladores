@@ -1,8 +1,21 @@
 /**@<myasm.h>::**/
 
-void chs(void);
-void acc_push(void);
-void acc_store(char const *name);
-void acc_recall(char const *name);
-void acc_immediate(double);
-void calculate(int operador);
+void chs(int);
+void asm_add(int);
+void asm_sub(int);
+void asm_mul(int);
+void asm_div(int);
+void asm_mullog(void);
+void asm_addlog(void);
+void gofalse(int);
+void jump (int);
+void jle(int);
+void jlt(int);
+void jge(int);
+void jgt(int);
+void jeq(int);
+void jne(int);
+void cmpl(int);
+void mklabel(int);
+void lmove (char const *, int);
+void rmove (char const *, int);

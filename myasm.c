@@ -4,68 +4,229 @@
 #include <gettoken.h>
 #include <myasm.h>
 #include <string.h>
+#include <keywords.h>
 
-/** auxiliary memory stuff **
-double stack[MAXSTACKSIZE];
-int stack_pointer = -1;
-double acc = 0;
+void asm_add(int type) {
+	switch(type) {
+	case BYTE:
+		printf("\taddb (%%bh),%%al\n");
+		break;
+	case WORD:
+		printf("\taddw (%%sp),%%ax\n");
+		break;
+	case INTEGER:
+		printf("\taddl (%%esp),%%eax\n");
+		break;
+	case LONGINT:
+		printf("\taddq (%%rsp),%%rax\n");
+		break;
+	case REAL:
+		printf("\taddss (%%xmn1),%%xmn0\n");
+		break;
+	case DOUBLE:
+		printf("\taddsd (%%xmn1),%%xmn0\n");
+		break;
+	}
+}
+
+void asm_sub(int type) {
+	switch(type) {
+	case BYTE:
+		printf("\tsubb (%%bh),%%al\n");
+		break;
+	case WORD:
+		printf("\tsubw (%%sp),%%ax\n");
+		break;
+	case INTEGER:
+		printf("\tsubl (%%esp),%%eax\n");
+		break;
+	case LONGINT:
+		printf("\tsubq (%%rsp),%%rax\n");
+		break;
+	case REAL:
+		printf("\tsubss (%%xmn1),%%xmn0\n");
+		break;
+	case DOUBLE:
+		printf("\tsubsd (%%xmn1),%%xmn0\n");
+		break;
+	}
+}
+
+void asm_mul(int type) {
+	switch(type) {
+	case BYTE:
+		printf("\tmulb (%%bh),%%al\n");
+		break;
+	case WORD:
+		printf("\tmulw (%%sp),%%ax\n");
+		break;
+	case INTEGER:
+		printf("\tmull (%%esp),%%eax\n");
+		break;
+	case LONGINT:
+		printf("\tmulq (%%rsp),%%rax\n");
+		break;
+	case REAL:
+		printf("\tmulss (%%xmn1),%%xmn0\n");
+		break;
+	case DOUBLE:
+		printf("\tmulsd (%%xmn1),%%xmn0\n");
+		break;
+	}
+}
+
+void asm_div(int type) {
+	switch(type) {
+	case BYTE:
+		printf("\tdivb (%%bh),%%al\n");
+		break;
+	case WORD:
+		printf("\tdivw (%%sp),%%ax\n");
+		break;
+	case INTEGER:
+		printf("\tdivl (%%esp),%%eax\n");
+		break;
+	case LONGINT:
+		printf("\tdivq (%%rsp),%%rax\n");
+		break;
+	case REAL:
+		printf("\tdivss (%%xmn1),%%xmn0\n");
+		break;
+	case DOUBLE:
+		printf("\tdivsd (%%xmn1),%%xmn0\n");
+		break;
+	}
+}
+
+void asm_mullog(void)
+{
+  printf("\tand %%eax, (%%esp)\n");
+  printf("\tpopl %%eax\n");
+}
+
+void asm_addlog(void)
+{
+  printf("\tor %%eax, (%%esp)\n");
+  printf("\tpopl %%eax\n");
+}
 
 /** operations**/
-void chs(void) {
-	//acc = -acc;
-}
-
-void acc_push(void) {
-	/*if (stack_pointer == MAXSTACKSIZE) {
-		fprintf(stderr, "erro estouro da pilha\n");
-		exit(-4);
+void chs(int type) {
+	switch(type) {
+	case BYTE:
+		printf("\tnegateb %%al\n");
+		break;
+	case WORD:
+		printf("\tnegatew %%ax\n");
+		break;
+	case INTEGER:
+		printf("\tnegatel %%eax\n");
+		break;
+	case LONGINT:
+		printf("\tnegateq %%rax\n");
+		break;
+	case REAL:
+		printf("\tnegatess %%xmn0\n");
+		break;
+	case DOUBLE:
+		printf("\tnegatesd %%xmn0\n");
+		break;
 	}
-	stack_pointer++;
-	stack[stack_pointer] = acc;*/
 }
 
-void acc_store(char const *name) {
-	/*int address = symtab_lookup(name);
-	if (address == -1) {
-		if (symtab_nextentry < MAXSYMENTRIES) {
-			address = symtab_nextentry;
-			symtab_nextentry++;
-			strcpy(symtab[address], name);
-		} else {
-			fprintf(stderr, "erro estouro da tabela\n");
-			exit(-3);
-		}
+void gofalse(int label)
+{
+  printf("\tjz .L%d\n", label);
+}
+
+void jump (int label)
+{
+  printf("\tjmp .L%d\n", label);
+}
+
+void jle(int label){
+  printf("\tjle .L%d\n", label);
+}
+
+void jlt(int label){
+  printf("\tjlt .L%d\n", label);
+}
+
+void jge(int label){
+  printf("\tjge .L%d\n", label);
+}
+
+void jgt(int label){
+  printf("\tjgt .L%d\n", label);
+}
+
+void jeq(int label){
+  printf("\tjeq .L%d\n", label);
+}
+
+void jne(int label){
+  printf("\tjne .L%d\n", label);
+}
+
+void cmpl(int type) {
+  printf("\tcmpl (%%esp), %%eax\n");
+}
+
+void mklabel(int label)
+{
+  printf(".L%d\n", label);
+}
+
+void lmove (char const *variable, int type) // copy of 32 bits
+{
+  switch(type) {
+	case BYTE:
+		printf("\tmovb %%al,%s\n",variable);
+		break;
+	case WORD:
+		printf("\tmovw %%ax,%s\n",variable);
+		break;
+	case INTEGER:
+		printf("\tmovl %%eax,%s\n",variable);
+		break;
+	case LONGINT:
+		printf("\tmovq %%rax,%s\n",variable);
+		break;
+	case REAL:
+		printf("\tmovss %%xmn0,%s\n",variable);
+		break;
+	case DOUBLE:
+		printf("\tmovsd %%xmn0,%s\n",variable);
+		break;
 	}
-	symtab_reg[address] = acc;*/
 }
 
-void acc_recall(char const *name) {
-	/*int address = symtab_lookup(name);
-	if (address > -1) {
-		acc = symtab_reg[address];
-	} else {
-		acc = 0;
-	}*/	
-}
-
-void acc_immediate(double val) {
-	/*acc = val;*/
-}
-
-void calculate(int operador) {
-    /*switch (operador) {
-    case '+':
-	acc = stack[stack_pointer] + acc; 
-	break;
-    case '-':
-	acc = stack[stack_pointer] - acc; 
-        break;
-    case '*':
-	acc = stack[stack_pointer] * acc; 
-	break;
-    case '/':
-	acc = stack[stack_pointer] / acc; 
-        break;
-    }
-    stack_pointer--;*/
+void rmove (char const *variable, int type) // copy of 32 bits
+{
+  switch(type) {
+	case BYTE:
+		printf("\tpushb %%al\n");
+		printf("\tmovb %%al,%s\n",variable);
+		break;
+	case WORD:
+		printf("\tpushw %%ax\n");
+		printf("\tmovw %%ax,%s\n",variable);
+		break;
+	case INTEGER:
+		printf("\tpushl %%eax\n");
+  		printf("\tmovl %s, %%eax\n",variable);
+		break;
+	case LONGINT:
+		printf("\tpushq %%rax\n");
+		printf("\tmovq %%rax,%s\n",variable);
+		break;
+	case REAL:
+		printf("\tpushss %%xmn0\n");
+		printf("\tmovss %%xmn0,%s\n",variable);
+		break;
+	case DOUBLE:
+		printf("\tpushsd %%xmn0\n");
+		printf("\tmovsd %%xmn0,%s\n",variable);
+		break;
+	}
 }

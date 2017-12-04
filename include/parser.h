@@ -15,9 +15,9 @@ void stmt(void);
 
 void stmtlist(void);
 
-int isoplus(int oplus);
+int isoplus(int oplus, int);
 
-int isotimes(int otimes);
+int isotimes(int otimes, int);
 
 int isotilde(int otilde);
 
