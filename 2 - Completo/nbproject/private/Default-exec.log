@@ -1,5 +1,5 @@
 called: cc
-	/home/CIT/gmaltoni/Documents/UNESP/compiladores
+	/home/CIT/gmaltoni/Documents/UNESP/Compiladores/compiladores/2 - Completo
 	cc
 	-I./include
 	-g
@@ -9,7 +9,7 @@ called: cc
 	mypas.c
 
 called: cc
-	/home/CIT/gmaltoni/Documents/UNESP/compiladores
+	/home/CIT/gmaltoni/Documents/UNESP/Compiladores/compiladores/2 - Completo
 	cc
 	-I./include
 	-g
@@ -19,7 +19,7 @@ called: cc
 	gettoken.c
 
 called: cc
-	/home/CIT/gmaltoni/Documents/UNESP/compiladores
+	/home/CIT/gmaltoni/Documents/UNESP/Compiladores/compiladores/2 - Completo
 	cc
 	-I./include
 	-g
@@ -29,7 +29,7 @@ called: cc
 	parser.c
 
 called: cc
-	/home/CIT/gmaltoni/Documents/UNESP/compiladores
+	/home/CIT/gmaltoni/Documents/UNESP/Compiladores/compiladores/2 - Completo
 	cc
 	-I./include
 	-g
@@ -39,7 +39,7 @@ called: cc
 	myasm.c
 
 called: cc
-	/home/CIT/gmaltoni/Documents/UNESP/compiladores
+	/home/CIT/gmaltoni/Documents/UNESP/Compiladores/compiladores/2 - Completo
 	cc
 	-I./include
 	-g
@@ -49,7 +49,7 @@ called: cc
 	keywords.c
 
 called: cc
-	/home/CIT/gmaltoni/Documents/UNESP/compiladores
+	/home/CIT/gmaltoni/Documents/UNESP/Compiladores/compiladores/2 - Completo
 	cc
 	-I./include
 	-g
@@ -59,7 +59,7 @@ called: cc
 	symtab.c
 
 called: cc
-	/home/CIT/gmaltoni/Documents/UNESP/compiladores
+	/home/CIT/gmaltoni/Documents/UNESP/Compiladores/compiladores/2 - Completo
 	cc
 	mypas.o
 	gettoken.o
@@ -71,12 +71,12 @@ called: cc
 	mypas
 
 called: /usr/bin/ld
-	/home/CIT/gmaltoni/Documents/UNESP/compiladores
+	/home/CIT/gmaltoni/Documents/UNESP/Compiladores/compiladores/2 - Completo
 	/usr/bin/ld
 	-plugin
 	/usr/lib/gcc/x86_64-linux-gnu/5/liblto_plugin.so
 	-plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/5/lto-wrapper
-	-plugin-opt=-fresolution=/tmp/cc6V1VWi.res
+	-plugin-opt=-fresolution=/tmp/ccid020u.res
 	-plugin-opt=-pass-through=-lgcc
 	-plugin-opt=-pass-through=-lgcc_s
 	-plugin-opt=-pass-through=-lc

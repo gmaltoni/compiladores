@@ -1,8 +1,4 @@
 cc -I./include -g   -c -o mypas.o mypas.c
-mypas.c: In function ‘main’:
-mypas.c:19:21: warning: too many arguments for format [-Wformat-extra-args]
-                     "%s: cannot open %s... exiting",
-                     ^
 cc -I./include -g   -c -o gettoken.o gettoken.c
 cc -I./include -g   -c -o parser.o parser.c
 cc -I./include -g   -c -o myasm.o myasm.c

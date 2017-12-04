@@ -7,10 +7,13 @@ SYMTAB symtab[MAXSYMENTRIES];
 
 int symtab_nextentry = 1;
 
+/*
+ * Procura por uma entrada na tabela de símbolos.
+ */
 int symtabLookup(char const *query) {
     int i;
     
-    for (i=1; i<symtab_nextentry; i++) {
+    for (i = 1; i < symtab_nextentry; i++) {
         if (strcmp(symtab[i].name, query) == 0)
             return i;
     }
@@ -18,6 +21,9 @@ int symtabLookup(char const *query) {
     return 0;
 }
 
+/*
+ * Adiciona uma entrada na tabela de símbolos.
+ */
 int symtabAppend(char const *newname) {
     int i = symtabLookup(newname);
     
@@ -25,14 +31,17 @@ int symtabAppend(char const *newname) {
         strcpy(symtab[symtab_nextentry].name, newname);
         return symtab_nextentry++;
     }
-
+    
     return 0; // Símbolo duplicado.
 }
 
+/*
+ * Coloca um tipo para um conjunto de símbolos.
+ */
 void symtabSetType(int vtype, int a) {
     int i;
     
-    for (i=a; i<symtab_nextentry; i++) {
+    for (i = a; i < symtab_nextentry; i++) {
         symtab[i].vtype = vtype;
     }
 }

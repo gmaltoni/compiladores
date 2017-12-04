@@ -42,6 +42,6 @@ int isKeyword(char const *identifier) {
         if (strcmp(keyword[i - BEGIN], identifier) == 0)
 	    return i;
     }
-
+    
     return 0;
 }

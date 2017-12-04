@@ -1,0 +1,7 @@
+cc -I./include -g   -c -o mypas.o mypas.c
+cc -I./include -g   -c -o gettoken.o gettoken.c
+cc -I./include -g   -c -o parser.o parser.c
+cc -I./include -g   -c -o myasm.o myasm.c
+cc -I./include -g   -c -o keywords.o keywords.c
+cc -I./include -g   -c -o symtab.o symtab.c
+cc   mypas.o gettoken.o parser.o myasm.o keywords.o symtab.o   -o mypas

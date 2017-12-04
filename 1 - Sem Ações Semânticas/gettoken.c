@@ -36,20 +36,20 @@ void skipSpaces(FILE * tape) {
  */
 void skipComments (FILE * tape) {
     int head;
-
+    
     if ((head = getc(tape)) == '/') {
         if((head = getc(tape)) == '*') {
-_while:     while((head = getc(tape)) != '*');
-
+            _while:     while((head = getc(tape)) != '*');
+            
             if ((head = getc(tape)) != '/')
                 goto _while;
-
+            
             return;
         }
-
+        
         ungetc(head, tape);
     }
-
+    
     ungetc(head, tape);
 }
 
@@ -68,7 +68,7 @@ int isString(FILE * tape) {
             lexeme[i] = head;
             i++;
         }
-        return ST; 
+        return ST;
     }
     
     // Um caractere sempre é acompanhado de apóstrofo.
@@ -88,7 +88,7 @@ int isString(FILE * tape) {
         return CH;
     }
     
-    ungetc(head, tape);	
+    ungetc(head, tape);
     return 0;
 }
 
@@ -99,10 +99,10 @@ int isString(FILE * tape) {
 int isID(FILE * tape) {
     int head;
     int i = 0, retval;
-
+    
     if (isalpha(lexeme[i] = getc(tape))) {
 	i++;
-
+        
         while (isalnum(lexeme[i] = getc(tape))) {
 	    if (i < MAXSTRLEN) {
 		i++;
@@ -119,7 +119,7 @@ int isID(FILE * tape) {
             return ID;
 	}
     }
-
+    
     ungetc(lexeme[i], tape);
     return 0;
 }
@@ -136,7 +136,7 @@ int isDecimal(FILE * tape) {
 	lexeme[i] = 0;
 	return DEC;
     }
-
+    
     ungetc(lexeme[0], tape);
     return 0;
 }
@@ -148,7 +148,7 @@ int isDecimal(FILE * tape) {
 int isAssignment(FILE * tape) {
     int head;
     int i = 0;
-
+    
     if ((head = getc(tape)) == ':') {
 	lexeme[i] = head;
 	i++;
@@ -188,24 +188,24 @@ int isComposite(FILE * tape) {
             
         case '<':
             if ((lexeme[1] = getc(tape)) == '>') {
-              return /*<>*/NEQ;
+                return /*<>*/NEQ;
             }
             
             if(lexeme[1] == '=') {
-              return /*<=*/LEQ; 
+                return /*<=*/LEQ;
             }
             
             break;
             
-        default: 
+        default:
             ungetc(lexeme[0], tape);
             return 0;
-    }  
-
+    }
+    
     ungetc(lexeme[1], tape);
     lexeme[1] = 0;
     
-    return lexeme[0];      
+    return lexeme[0];
 }
 
 /*
@@ -215,18 +215,18 @@ int isScientificNotation(FILE * tape) {
     int head, sgn = 0, expChar = 0;
     int i;
     expChar = getc(tape);
-
+    
     i = strlen(lexeme);
-
+    
     if (toupper(expChar) == 'E') {
 	lexeme[i] = expChar;
 	i++;
-
+        
         if ((head = getc(tape)) == '+' || (head == '-')) {
             sgn = head;
 	    lexeme[i] = head;
 	    i++;
-
+            
             if (!isdigit(head = getc(tape))) {
 		i = i - 2;
 		lexeme[i] = 0;
@@ -246,7 +246,7 @@ int isScientificNotation(FILE * tape) {
             
             return 0;
         }
-
+        
         while (isdigit(head = getc(tape))){
 	    if (i < MAXSTRLEN) {
 		lexeme[i] = head;
@@ -254,12 +254,12 @@ int isScientificNotation(FILE * tape) {
 	    }
 	}
         
-	lexeme[i] = 0;  
+	lexeme[i] = 0;
         ungetc(head, tape);
         
         return SCI;
     }
-
+    
     else {
         ungetc(expChar, tape);
         return 0;
@@ -276,9 +276,9 @@ int isNumber(FILE * tape) {
     int head, token = 0;
     int i = 0;
     token = isDecimal(tape);
-
+    
     i = strlen(lexeme);
-
+    
     if (token && token != DEC) {
         return token;
     } else if (token == DEC) {
@@ -313,7 +313,7 @@ int isNumber(FILE * tape) {
         
 	lexeme[i] = head;
 	i++;
-
+        
         while (isdigit(head = getc(tape))){
 	    if (i < MAXSTRLEN) {
 		lexeme[i] = head;
@@ -342,7 +342,7 @@ int getToken(FILE * tape) {
     skipComments(tape);
     
     if ((token = isString(tape)) ||
-	(token = isID(tape)) ||
+        (token = isID(tape)) ||
         (token = isNumber(tape)) ||
         (token = isComposite(tape)) ||
         (token = isAssignment(tape))) {

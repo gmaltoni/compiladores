@@ -1,0 +1,1 @@
+var abc,cdz:integer; begin abc := 3;cdz:=abc end.

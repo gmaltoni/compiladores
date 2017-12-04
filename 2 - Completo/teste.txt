@@ -1,0 +1,7 @@
+var num1, num2, num3 : integer;
+    bol1, bol2 : boolean;
+    c1 : char;
+begin
+num1 := 2;
+end
+.

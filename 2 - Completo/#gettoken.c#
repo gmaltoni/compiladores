@@ -1,0 +1,202 @@
+/**@<gettoken.c>::**/
+
+#include <ctype.h>
+#include <stdio.h>
+#include <gettoken.h>
+
+void
+skipspaces(FILE * tape)
+{
+    int             head;
+    while (isspace(head = getc(tape)));
+    ungetc(head, tape);
+}
+
+int
+isID(FILE * tape)
+{
+    int             head;
+
+    if (isalpha(head = getc(tape))) {
+        while (isalnum(head = getc(tape)));
+        ungetc(head, tape);
+        return ID;
+    }
+    ungetc(head, tape);
+    return 0;
+}
+
+int
+isDEC(FILE * tape)
+{
+    int             head;
+
+    if (isdigit(head = getc(tape))) {
+        if (head == '0') {
+            return DEC;
+        }
+        while (isdigit(head = getc(tape)));
+        ungetc(head, tape);
+        return DEC;
+    }
+    ungetc(head, tape);
+    return 0;
+}
+
+int
+isEQ(FILE * tape)
+{
+    int             head;
+    if ((head = getc(tape)) == '=') {
+        if ((head = getc(tape)) == '=') {
+            return EQ;
+        }
+        ungetc(head, tape);
+        ungetc('=', tape);
+        return 0;
+    }
+    ungetc(head, tape);
+    return 0;
+}
+
+int
+isNEQ(FILE * tape)
+{
+    int             head;
+    if ((head = getc(tape)) == '!') {
+        if ((head = getc(tape)) == '=') {
+            return NEQ;
+        }
+        ungetc(head, tape);
+        ungetc('!', tape);
+        return 0;
+    }
+    ungetc(head, tape);
+    return 0;
+}
+
+int
+isGEQ(FILE * tape)
+{
+    int             head;
+    if ((head = getc(tape)) == '>') {
+        if ((head = getc(tape)) == '=') {
+            return GEQ;
+        }
+        ungetc(head, tape);
+        ungetc('>', tape);
+        return 0;
+    }
+    ungetc(head, tape);
+    return 0;
+}
+
+int
+isLEQ(FILE * tape)
+{
+    int             head;
+    if ((head = getc(tape)) == '<') {
+        if ((head = getc(tape)) == '=') {
+            return LEQ;
+        }
+        ungetc(head, tape);
+        ungetc('<', tape);
+        return 0;
+    }
+    ungetc(head, tape);
+    return 0;
+}
+
+int isSCI(FILE * tape)
+{
+	int head, sgn = 0, expChar = 0;
+	int expChar = getc(tape);
+
+	if ( == 'E') { // Q1 - E = 69
+		expChar = head;
+		
+		printf("isSCI - Entrou no if de expchar");
+
+		if ((head = getc(tape)) == '+' || (head == '-')) { // Q2
+			//printf("isSCI - Entrou no if de sinal");
+
+			sgn = head; // Q3
+
+			if (!isdigit(head = getc(tape))) {
+				//printf("isSCI - Entrou no if de nao digito");
+
+				ungetc(head, tape);
+				ungetc(sgn, tape);
+				ungetc(expChar, tape);
+				return 0;
+			}
+		} else if (!isdigit(head)) {
+			//printf("isSCI - Entrou no if 2 de nao digito");
+
+			ungetc(head, tape);
+			ungetc(expChar, tape);
+			return 0;
+		} 
+
+		while (isdigit(head = getc(tape))); // Q4
+		ungetc(head, tape);
+		return SCI;
+	}
+
+	else {
+		ungetc(expChar, tape);
+		return 0;
+	}
+
+}
+
+int isNUM(FILE * tape) {
+	int head, token = 0;
+
+	if (token = isDEC(tape)) {
+		//printf("isNUM - Entrou no if de DEC");
+
+		if ((head = getc(tape) == '.')) {
+			//printf("isNUM - Entrou no if de ponto");
+
+			token = DECFP;
+			while (isdigit(head = getc(tape)));
+		}
+		
+		ungetc(head, tape);
+		isSCI(tape) && (token == DEC) && (token = DECFP);
+		return token;
+	} else if ((head = getc(tape) == '.')) {
+		//printf("Entrou no else if ");
+
+		if (!isdigit(head = getc(tape))) {
+			ungetc(head, tape);
+			ungetc('.', tape);
+			return 0;
+		}
+
+		while (isdigit(head = getc(tape)));
+		ungetc(head, tape);
+		isSCI(tape);
+		return DECFP;
+	} else {
+		//printf("Entrou no else ");
+
+		ungetc(head, tape);
+		return 0;
+	}
+}
+
+int
+gettoken(FILE * tape)
+{
+    int             token;
+    skipspaces(tape);
+    (token = isID(tape)) ||
+        (token = isNUM(tape)) ||
+        (token = isEQ(tape)) ||
+        (token = isNEQ(tape)) ||
+        (token = isGEQ(tape)) ||
+        (token = isLEQ(tape)) || (token = getc(tape));
+    return token;
+}
