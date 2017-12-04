@@ -230,7 +230,7 @@ void mkLabel(int label) {
  * TODO: Comentário.
  * Cópia de 32 bits.
  */
-void lmove (char const *variable, int type) {
+void lmove(char const *variable, int type) {
     switch(type) {
 	case BYTE:
             printf("\tmovb %%al,%s\n",variable);
@@ -257,7 +257,7 @@ void lmove (char const *variable, int type) {
  * TODO: Comentário.
  * Cópia de 32 bits.
  */
-void rmove (char const *variable, int type) {
+void rmove(char const *variable, int type) {
     switch(type) {
 	case BYTE:
             printf("\tpushb %%al\n");

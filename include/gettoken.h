@@ -1,8 +1,8 @@
 /**@<gettoken.h>::**/
-#define MAXSTRLEN 	1024
 
-extern char *tokeninfo[]; 
+#define MAXSTRLEN 1024
 
+extern char *tokeninfo[];
 extern char lexeme[];
 
 enum {
@@ -18,4 +18,4 @@ enum {
     ST
 };
 
-int  getToken(FILE *);
+int getToken(FILE *);
