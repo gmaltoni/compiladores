@@ -11,11 +11,11 @@ extern SYMTAB symtab[];
 
 extern int symtab_nextentry;
 
-int symtab_lookup(char const *query);
+int symtabLookup(char const *query);
 
-int symtab_append(char const *newname);
+int symtabAppend(char const *newname);
 
-void symtab_settype(int , int);
+void symtabSetType(int , int);
 
 /* not been used for while
 extern double symtab_reg[];

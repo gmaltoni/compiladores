@@ -58,7 +58,7 @@ void repStmt() {
     /**/int lbl_repeat, lbl_endrepeat/**/;
     /**/lbl_repeat=loopcount++/**/;
     /**/printf(".L%d:\n", lbl_repeat)/**/;
-    stmtlist(); 				//		<<stmtlist>>.as
+    stmtList(); 				//		<<stmtList>>.as
     match(UNTIL);				
 						//		jnz .L$lbl_repeat
     expr(BOOL); 				//		<<expr>>.as
@@ -67,7 +67,7 @@ void repStmt() {
 
 void bgnStmt() {
     match(BEGIN);
-    stmtlist();
+    stmtList();
     match(END);
 }
 
@@ -84,7 +84,7 @@ int expr(int inheritedType) {
 
     /**/oprnd1 = /**/smpExpr(0);
 
-    if (isotilde(/**/otilde =/**/ lookahead)) {
+    if (isOTilde(/**/otilde =/**/ lookahead)) {
         match(otilde);
 
         /**/oprnd2 =/**/ smpExpr(/**/oprnd1/**/);
@@ -200,7 +200,7 @@ int smpExpr(int inheritedType) {
   /**/char name[MAXSTRLEN+1]/**/;
 
 E_start:
-    /**/sign = /**/isnegate();
+    /**/sign = /**/isNegate();
     if(sign) match(sign);
 T_start:
 F_start:
@@ -211,7 +211,7 @@ F_start:
         case ID:
             /*2*/strcpy(name, lexeme)/*2*/;
 
-            /**/int symtab_descriptor = symtab_lookup(name)/**/;
+            /**/int symtab_descriptor = symtabLookup(name)/**/;
             /**/if (symtab_descriptor) {
                 L_type = symtab[symtab_descriptor].vtype;
             } else {
@@ -243,7 +243,7 @@ F_start:
             } else {
                     /**/
                     // vd is the variable descriptor in the symbol table
-                    int vd = symtab_lookup(name);
+                    int vd = symtabLookup(name);
                     if (vd > 0) {
                         R_type = symtab[vd].vtype;
                     } else {
@@ -320,7 +320,7 @@ F_start:
     /*12*if (otimes){calculate(otimes);otimes=0;}/*12*/
 
 F_end:
-    if (/**/otimes = /**/isotimes(lookahead, acctype)) {
+    if (/**/otimes = /**/isOTimes(lookahead, acctype)) {
 	/**/
 	//TODO: verificar mod e div com inteiros
 	if (typeClass(acctype) != operClass(otimes)) {
@@ -340,7 +340,7 @@ T_end:
 
     /*13*if (oplus) {calculate(oplus);oplus=0;}/*13*/
 
-    if (/**/oplus = /**/isoplus(lookahead, acctype)) {
+    if (/**/oplus = /**/isOPlus(lookahead, acctype)) {
 	/**/
 	if (typeClass(acctype) != operClass(oplus)) {
             fprintf(stderr, "error: operato type does not match operand type\n");
@@ -382,45 +382,45 @@ int operClass(int oper) {
     return 0;
 }
 
-int isoplus(int oplus, int type)
+int isOPlus(int oplus, int type)
 {
     switch (oplus) {
-    case '+':
-	/**/asmAdd(type)/**/;
-	return '+';
-    case '-':
-	/**/asmSub(type)/**/;
-        return '-';
-    case OR:
-	/**/asmMulLog()/**/;
-	return OR;
+        case '+':
+            /**/asmAdd(type)/**/;
+            return '+';
+        case '-':
+            /**/asmSub(type)/**/;
+            return '-';
+        case OR:
+            /**/asmMulLog()/**/;
+            return OR;
     }
 
     return 0;
 }
 
-int isotimes(int otimes, int type)
+int isOTimes(int otimes, int type)
 {
     switch (otimes) {
-    case '*':
-	/**/asmMul(type)/**/;
-	return '*';
-    case '/':
-	/**/asmDiv(type)/**/;
-        return '/';
-    case DIV:
-	return DIV;
-    case AND:
-	/**/asmAddLog()/**/;
-	return AND;
-    case MOD:
-	return MOD;
+        case '*':
+            /**/asmMul(type)/**/;
+            return '*';
+        case '/':
+            /**/asmDiv(type)/**/;
+            return '/';
+        case DIV:
+            return DIV;
+        case AND:
+            /**/asmAddLog()/**/;
+            return AND;
+        case MOD:
+            return MOD;
     }
 
     return 0;
 }
 
-int isotilde(int otilde) {
+int isOTilde(int otilde) {
     switch(otilde) {
         case '=':
         case NEQ:
@@ -434,22 +434,27 @@ int isotilde(int otilde) {
     return 0;
 }
 
-int varlist(void) {	
-	/*16*/int a = symtab_nextentry/*16*/;
-    VAR_LIST:
-	/*17*/if (symtab_append(lexeme) == 0) {
-		fprintf(stderr, "fatal error: %s already declared\n", lexeme);	
-	}/*17*/
-        match(ID);
-        if (lookahead == ',') {
-	    match(',');
-	    goto VAR_LIST;
-	}
-	return a;
+int varList(void) {	
+    /*16*/int a = symtab_nextentry/*16*/;
+    
+VAR_LIST:
+    /*17*/if (symtabAppend(lexeme) == 0) {
+            fprintf(stderr, "fatal error: %s already declared\n", lexeme);	
+    }/*17*/
+
+    match(ID);
+    
+    if (lookahead == ',') {
+        match(',');
+        goto VAR_LIST;
+    }
+    
+    return a;
 }
 
-int varightType(void) {
-	int type = lookahead;
+int varRightType(void) {
+    int type = lookahead;
+    
     switch(lookahead) {
         case BYTE:
         case WORD:
@@ -464,79 +469,83 @@ int varightType(void) {
         default:
 	    match(STRING);
     }
+    
     return type;
 }
 
 void declarative(void) {
     /**/int range_start, range_type/**/;
-    /* vardec1 --> VAR varlist : varightType ; */
-    /* varlist --> ID { , ID } 
-     * varightType --> BYTE | WORD | INTEGER | LONGINT | REAL | DOUBLE
-     *           | BOOLEAN | CHAR | STRING
+    /* vardec1 --> VAR varList : varRightType ; */
+    /* varList --> ID { , ID } 
+     * varRightType --> BYTE | WORD | INTEGER | LONGINT | REAL | DOUBLE |
+     *                  BOOLEAN | CHAR | STRING
      */
 
     if (lookahead == VAR)  {
 	match(VAR);
 WHLID:
-	range_start = varlist();
+	range_start = varList();
 	match(':');
-	range_type = varightType();
+	range_type = varRightType();
         match(';');
-	/**/symtab_settype(range_type,range_start)/**/;
+        
+	/**/symtabSetType(range_type,range_start)/**/;
+        
 	if(lookahead==ID) goto WHLID;
     }
 }
 
-
-
-void stmt(void)
-{
-    	switch(lookahead){
-		case BEGIN:  bgnStmt();
-			     break;
-		case IF:     ifStmt();
-			     break;
-		case WHILE:  whlStmt();
-			     break;
-		case REPEAT: repStmt();
-			     break;
-
-		 case ID: //tokens.h
-		 case FLT: //tokens.h
-		 case DEC: //tokens.h
-		 case TRUE: //keywords.h
-		 case FALSE: //keywords.h
-		 case NOT: //keywords.h
-		 case '-':
-		 case '(':
-		      	smpExpr(0);
-		      	break;
-		default:     ;
-	}
+void stmt(void) {
+    switch(lookahead) {
+        case BEGIN:
+            bgnStmt();
+            break;
+        case IF:
+            ifStmt();
+            break;
+        case WHILE:
+            whlStmt();
+            break;
+        case REPEAT:
+            repStmt();
+            break;
+        case ID:    //tokens.h
+        case FLT:   //tokens.h
+        case DEC:   //tokens.h
+        case TRUE:  //keywords.h
+        case FALSE: //keywords.h
+        case NOT:   //keywords.h
+        case '-':
+        case '(':
+            smpExpr(0);
+            break;
+        default:
+            ;
+    }
 }
 
-void stmtlist(void) {
-    STMT_LIST:
-        stmt();
-        if (lookahead == ';') {
-	    match(';');
-            goto STMT_LIST;   
-	}
+void stmtList(void) {
+STMT_LIST:
+    stmt();
+    if (lookahead == ';') {
+        match(';');
+        goto STMT_LIST;   
+    }
 }
 
 void imperative(void) {
     match(BEGIN);
-    stmtlist();
+    stmtList();
     match(END);
     match('.');
 }
 
-void mypas(void) {
-    declarative();
-    imperative();
+void myPas(void) {
+    declarative(); // Símbolos serão declarados aqui.
+    imperative(); // Símbolos serão usados aqui.
 }
 
-/** lexer-to-parser interface **/
+/** Interface lexer-to-parser **/
 
 int lookahead;
 
@@ -551,37 +560,47 @@ void match(int expected) {
     }
 }
 
-int isnegate() {
-  	switch (lookahead){
-		case '-':
-		case NOT:
-			return lookahead;
-		default:
-			return 0;
-	}
+int isNegate() {
+    switch (lookahead){
+        case '-':
+        case NOT:
+            return lookahead;
+        default:
+            return 0;
+    }
 }
 
 int flt2arch(char const * name, int sign) {
-	double val;
-	val = strtod(name, NULL);	
-	if (sign) val = -val;	
-	if (val > FLT_MAX || val < FLT_MIN)
-		return DOUBLE;
-	return REAL;
+    double val;
+    val = strtod(name, NULL);	
+    
+    if (sign)
+        val = -val;	
+    
+    if (val > FLT_MAX || val < FLT_MIN)
+        return DOUBLE;
+    
+    return REAL;
 }
 
 int uint2arch(char const * name, int sign) {
-	long val;
-	val = atol(name);
-	if (sign) val = -val;
-	if (val > BYTE_MAX || val < BYTE_MIN) {
-		if (val > WORD_MAX || val < WORD_MIN) {
-			if (val > INTEGER_MAX || val < INTEGER_MIN) {
-				return LONGINT;
-			}
-			return INTEGER;
-		}
-		return WORD;
-	}
-	return BYTE;
+    long val;
+    val = atol(name);
+    
+    if (sign)
+        val = -val;
+    
+    if (val > BYTE_MAX || val < BYTE_MIN) {
+        if (val > WORD_MAX || val < WORD_MIN) {
+            if (val > INTEGER_MAX || val < INTEGER_MIN) {
+                return LONGINT;
+            }
+            
+            return INTEGER;
+        }
+        
+        return WORD;
+    }
+    
+    return BYTE;
 }

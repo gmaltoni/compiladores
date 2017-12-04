@@ -21,7 +21,7 @@ int main(int argc, char const *argv[]) {
     }
     
     lookahead = getToken(src);
-    mypas();
+    myPas();
 
     printf("\n");
 

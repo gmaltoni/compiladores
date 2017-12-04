@@ -9,19 +9,19 @@ int smpExpr(int);
 
 int expr(int);
 
-void mypas(void);
+void myPas(void);
 
 void stmt(void);
 
-void stmtlist(void);
+void stmtList(void);
 
-int isoplus(int oplus, int);
+int isOPlus(int oplus, int);
 
-int isotimes(int otimes, int);
+int isOTimes(int otimes, int);
 
-int isotilde(int otilde);
+int isOTilde(int otilde);
 
-int isnegate(void);
+int isNegate(void);
 
 int operClass(int );
 
