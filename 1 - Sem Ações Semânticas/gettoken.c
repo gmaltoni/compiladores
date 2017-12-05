@@ -351,6 +351,6 @@ int getToken(FILE * tape) {
     
     lexeme[0] = getc(tape);
     lexeme[1] = 0;
-    
+
     return lexeme[0];
 }

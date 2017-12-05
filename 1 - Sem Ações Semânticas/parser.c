@@ -61,8 +61,11 @@ void bgnStmt() {
 
 /* expr --> E [ relop E ] */
 int expr(int inheritedType) {
+    smpExpr(0);
+
     if (isOTilde(lookahead)) {
         match(lookahead);
+        smpExpr(0);
     }
     
     return 0;
@@ -158,7 +161,6 @@ int typeClass(int type) {
 }
 
 int smpExpr(int inheritedType) {
-    printf("aqui1");
     E_start:
             if(isNegate())
                 match(lookahead);
@@ -166,15 +168,15 @@ int smpExpr(int inheritedType) {
             F_start:
             switch (lookahead) {
                 case ID:
+
                     match(ID);
                     if (lookahead == ASGNM) {
                         /** ASGNM = ":=" **/
                         match(ASGNM);
                         smpExpr(0);
                     }
-                    printf("\n %d \n", lookahead);
                     break;
-                    
+
                 case FLT:
                     match(FLT);
                     break;
@@ -198,20 +200,20 @@ int smpExpr(int inheritedType) {
                     smpExpr(0);
                     match(')');
             }
+
+    F_end:
+            if (isOTimes(lookahead, 0)) {
+                match(lookahead);
+                goto F_start;
+            }
             
-            F_end:
-                    if (isOTimes(lookahead, 0)) {
-                        match(lookahead);
-                        goto F_start;
-                    }
-            
-            T_end:
-                    if (isOPlus(lookahead, 0)) {
-                        match(lookahead);
-                        goto T_start;
-                    }
-            
-            E_end:
+    T_end:
+            if (isOPlus(lookahead, 0)) {
+                match(lookahead);
+                goto T_start;
+            }
+    
+    E_end:
                     ;
             return 0;
 }
@@ -369,8 +371,10 @@ void stmt(void) {
 void stmtList(void) {
     STMT_LIST:
             stmt();
+
     if (lookahead == ';') {
         match(';');
+
         goto STMT_LIST;
     }
 }
@@ -396,7 +400,7 @@ void match(int expected) {
         lookahead = getToken(src);
     } else {
         fprintf(stderr, "token mismatch\n");
-        fprintf(stderr, "expected '%c' ", expected);
+        fprintf(stderr, "expected '%d' ", expected);
         fprintf(stderr, "whereas found %d\n", lookahead);
         exit(-2);
     }
