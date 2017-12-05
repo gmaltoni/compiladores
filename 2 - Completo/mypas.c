@@ -8,22 +8,18 @@
 FILE *src;
 
 /*
- * Função principal do programa.
+ * Valida existência de arquivo de entrada e é função principal do programa.
  */
 int main(int argc, char const *argv[]) {
-    //  Valida existência de arquivo de entrada
-
     if (argc == 1) {
         // A entrada é o teclado.
         src = stdin;
-        
     } else {
         // Existe um arquivo de entrada.
         src = fopen(argv[1], "r");
-
         if (src == NULL) {
             fprintf(stderr,
-                    "%s: cannot open %s... exiting with error status %d\n", ''
+                    "%s: cannot open %s... exiting with error status %d\n",
                     argv[0], argv[1], -1);
             return -1;
         }
@@ -31,8 +27,8 @@ int main(int argc, char const *argv[]) {
     
     lookahead = getToken(src);
     myPas();
-
+    
     printf("\n");
-
+    
     return 0;
 }
