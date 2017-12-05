@@ -3,7 +3,8 @@
 #include <keywords.h>
 #include <string.h>
 
-// Conjuntp de palavras reservadas.
+// Conjunto de palavras reservadas.
+
 char *keyword[] = {
     "begin",
     "var",

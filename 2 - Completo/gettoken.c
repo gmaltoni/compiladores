@@ -39,7 +39,7 @@ void skipComments (FILE * tape) {
     
     if ((head = getc(tape)) == '/') {
         if((head = getc(tape)) == '*') {
-            _while:     while((head = getc(tape)) != '*');
+_while:     while((head = getc(tape)) != '*');
             
             if ((head = getc(tape)) != '/')
                 goto _while;
@@ -99,25 +99,26 @@ int isString(FILE * tape) {
 int isID(FILE * tape) {
     int head;
     int i = 0, retval;
-    
+
     if (isalpha(lexeme[i] = getc(tape))) {
-	i++;
-        
+        i++;
+
         while (isalnum(lexeme[i] = getc(tape))) {
-	    if (i < MAXSTRLEN) {
+            if (i < MAXSTRLEN) {
                 i++;
-	    }
-	}
-        
+            }
+        }
+
         ungetc(lexeme[i], tape);
-	lexeme[i] = 0;
-	retval = isKeyword(lexeme);
-        
-	if (retval) {
+        lexeme[i] = 0;
+        retval = isKeyword(lexeme);
+
+        if (retval) {
             return retval;
-	} else {
+
+        } else {
             return ID;
-	}
+        }
     }
     
     ungetc(lexeme[i], tape);
@@ -130,14 +131,15 @@ int isID(FILE * tape) {
  */
 int isDecimal(FILE * tape) {
     if(isdigit(lexeme[0] = getc(tape))) {
-	int i;
-        
-	for(i = 1; isdigit(lexeme[i] = getc(tape)); (i < MAXSTRLEN) && i++);
-        
-	ungetc(lexeme[i], tape);
-	lexeme[i] = 0;
-        
-	return DEC;
+        int i;
+
+        for(i = 1; isdigit(lexeme[i] = getc(tape)); (i < MAXSTRLEN) && i++);
+
+        ungetc(lexeme[i], tape);
+
+        lexeme[i] = 0;
+
+        return DEC;
     }
     
     ungetc(lexeme[0], tape);
@@ -153,13 +155,14 @@ int isAssignment(FILE * tape) {
     int i = 0;
     
     if ((head = getc(tape)) == ':') {
-	lexeme[i] = head;
-	i++;
+        lexeme[i] = head;
+        i++;
         
         if ((head = getc(tape)) == '=') {
-	    lexeme[i] = head;
-	    i++;
-	    lexeme[i] = 0;
+            lexeme[i] = head;
+            i++;
+            lexeme[i] = 0;
+
             return ASGNM;
         }
         
@@ -167,8 +170,9 @@ int isAssignment(FILE * tape) {
         ungetc(':', tape);
         
         return 0;
+        
     } else {
-	ungetc(head, tape);
+        ungetc(head, tape);
     }
     
     return 0;
@@ -219,22 +223,22 @@ int isScientificNotation(FILE * tape) {
     int i;
     
     expChar = getc(tape);
-    
+
     i = strlen(lexeme);
     
     if (toupper(expChar) == 'E') {
-	lexeme[i] = expChar;
-	i++;
+        lexeme[i] = expChar;
+        i++;
         
         if ((head = getc(tape)) == '+' || (head == '-')) {
             sgn = head;
-	    lexeme[i] = head;
-	    i++;
+            lexeme[i] = head;
+            i++;
             
             if (!isdigit(head = getc(tape))) {
-		i = i - 2;
-		lexeme[i] = 0;
-                
+                i = i - 2;
+                lexeme[i] = 0;
+
                 ungetc(head, tape);
                 ungetc(sgn, tape);
                 ungetc(expChar, tape);
@@ -242,8 +246,8 @@ int isScientificNotation(FILE * tape) {
                 return 0;
             }
         } else if (!isdigit(head)) {
-	    i--;
-	    lexeme[i] = 0;
+            i--;
+            lexeme[i] = 0;
             
             ungetc(head, tape);
             ungetc(expChar, tape);
@@ -252,19 +256,18 @@ int isScientificNotation(FILE * tape) {
         }
         
         while (isdigit(head = getc(tape))){
-	    if (i < MAXSTRLEN) {
-		lexeme[i] = head;
-		i++;
-	    }
-	}
-        
-	lexeme[i] = 0;
+            if (i < MAXSTRLEN) {
+                lexeme[i] = head;
+                i++;
+            }
+        }
+
+        lexeme[i] = 0;
         ungetc(head, tape);
         
         return SCI;
-    }
     
-    else {
+    } else {
         ungetc(expChar, tape);
         return 0;
     }
@@ -280,26 +283,27 @@ int isNumber(FILE * tape) {
     int head, token = 0;
     int i = 0;
     
-    token = isDecimal(tape);
+    token = isDecimal(tape);                    //Vefificação decimal
     
     i = strlen(lexeme);
     
     if (token && token != DEC) {
         return token;
+
     } else if (token == DEC) {
         if ((head = getc(tape)) == '.') {
-	    lexeme[i] = head;
-	    i++;
-            token = FLT;
-            
-            while (isdigit(head = getc(tape))){
-	    	if (i < MAXSTRLEN) {
+            lexeme[i] = head;
+            i++;
+            token = FLT;                        //Vefificação float
+
+            while (isdigit(head = getc(tape))) {
+    	    	if (i < MAXSTRLEN) {
                     lexeme[i] = head;
                     i++;
-	    	}
-	    }
-            
-	    lexeme[i] = 0;
+    	    	}
+            }
+
+            lexeme[i] = 0;
         }
         
         ungetc(head, tape);
@@ -307,26 +311,26 @@ int isNumber(FILE * tape) {
         return token;
         
     } else if ((head = getc(tape)) == '.') {
-	lexeme[i] = head;
-	i++;
-        
+        lexeme[i] = head;
+        i++;
+
         if (!isdigit(head = getc(tape))) {
             ungetc(head, tape);
             ungetc('.', tape);
             return 0;
         }
+
+        lexeme[i] = head;
+        i++;
         
-	lexeme[i] = head;
-	i++;
-        
-        while (isdigit(head = getc(tape))){
-	    if (i < MAXSTRLEN) {
-		lexeme[i] = head;
-		i++;
-	    }
-	}
-        
-	lexeme[i] = 0;
+        while (isdigit(head = getc(tape))) {
+            if (i < MAXSTRLEN) {
+                lexeme[i] = head;
+                i++;
+            }
+        }
+
+        lexeme[i] = 0;
         
         ungetc(head, tape);
         isScientificNotation(tape);
